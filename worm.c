@@ -8,6 +8,7 @@
 #include <Windows.h>
 #include <stdbool.h>
 #include <limits.h>
+#include<stdlib.h>
 
 #define WIDTH   18
 #define HEIGHT  10
@@ -24,6 +25,7 @@ int x, y;
 // 현재 방향(worm_x, worm_y의 증가/감소량)
 // the current direction. i.e. increment/decrement values for 'worm_x' and 'worm_y'
 int dx, dy;
+int score = 1;
 
 void initialize(int, int);
 void display();
@@ -57,10 +59,41 @@ void initialize(int start_x, int start_y) {
     y = start_y;
     dx = dy = 1;
     board[x][y] = '@';
+
+    //게임판 초기 +, - 위치
+    int cnt = 0;
+    int cnt2 = 0;
+    int rx;
+    int ry;
+    
+
+    while(cnt <  5)
+    {
+        rx = rand() % 16 + 1;
+        ry = rand() % 8 + 1;
+        if (board[ry][rx] == ' ')
+        {
+            board[ry][rx] = '+';
+            cnt++;
+        }
+
+    }
+    while (cnt2 < 5)
+    {
+        rx = rand() % 16 + 1;
+        ry = rand() % 8 + 1;
+        if (board[ry][rx] == ' ')
+        {
+            board[ry][rx] = '-';
+            cnt2++;
+        }
+
+    }
 }
 
 // 게임판 화면 출력 display the game board
 void display() {
+    printf("socre = %d\n", score);
     for (int i = 0; i < HEIGHT; i++) {
         for (int j = 0; j < WIDTH; j++) {
             printf("%c", board[i][j]);
@@ -72,28 +105,44 @@ void display() {
 // 다음 이동할 위치를 조사한다.
 // Investigate the next position in the current direction
 bool is_blocked() {
-    return board[x + dx][y + dy] != ' ';
+    return board[x + dx][y + dy] == '#';
 }
 
 void turn() {
-    if (board[x + dx][y] != ' ')
+    if (board[x + dx][y] == '#')
         dx = -dx;
     else
         dy = -dy;
 }
 
 void move() {
+
+    if (board[x+dx][y+dy] == '+')
+    {
+        score++;
+       
+    }
+
+    else if (board[x + dx][y + dy] == '-')
+    {
+        score--;
+    }
+
     board[x][y] = ' ';
     x += dx;
     y += dy;
     board[x][y] = '@';
 }
 
+
 int main(void)
 {
+
     initialize(1, 1);
     while (1) {
-        while (is_blocked()) {
+        
+        while (is_blocked()) 
+        {
             turn();
         }
         move();
