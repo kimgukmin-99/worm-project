@@ -9,6 +9,7 @@
 #include <stdbool.h>
 #include <limits.h>
 #include<stdlib.h>
+#include <time.h>
 
 #define WIDTH   18
 #define HEIGHT  10
@@ -25,6 +26,7 @@ int x, y;
 // 현재 방향(worm_x, worm_y의 증가/감소량)
 // the current direction. i.e. increment/decrement values for 'worm_x' and 'worm_y'
 int dx, dy;
+//스코어점수판 초기값 설정
 int score = 1;
 
 void initialize(int, int);
@@ -60,12 +62,11 @@ void initialize(int start_x, int start_y) {
     dx = dy = 1;
     board[x][y] = '@';
 
-    //게임판 초기 +, - 위치
+    //게임판 초기 +, - 위치 생성
     int cnt = 0;
     int cnt2 = 0;
     int rx;
     int ry;
-    
 
     while(cnt <  5)
     {
@@ -93,7 +94,7 @@ void initialize(int start_x, int start_y) {
 
 // 게임판 화면 출력 display the game board
 void display() {
-    printf("socre = %d\n", score);
+    printf("socre = %d\n", score); //맨위 스코어판 출력
     for (int i = 0; i < HEIGHT; i++) {
         for (int j = 0; j < WIDTH; j++) {
             printf("%c", board[i][j]);
@@ -105,7 +106,7 @@ void display() {
 // 다음 이동할 위치를 조사한다.
 // Investigate the next position in the current direction
 bool is_blocked() {
-    return board[x + dx][y + dy] == '#';
+    return board[x + dx][y + dy] == '#'; //다음 이동 위치가 벽일때 값을 조사
 }
 
 void turn() {
@@ -116,18 +117,47 @@ void turn() {
 }
 
 void move() {
-
+    
+    //다음 이동위치에 + 또는 -가 있을때 스코어값 변경해주고 랜덤적으로 + 또는 - 생성해서 항상 5개씩 개수 유지 
+    
     if (board[x+dx][y+dy] == '+')
     {
         score++;
+        bool search = false;
+        while (!search) //랜덤위치에 아무것도 없을경우 bool값 변경해서 while문 끝내기
+        {
+            int rx = rand() % 16 + 1;
+            int ry = rand() % 8 + 1;
+            if (board[ry][rx] == ' ')
+            {
+                board[ry][rx] = '+';
+                search = true;
+            }
+
+        }
+
        
     }
 
     else if (board[x + dx][y + dy] == '-')
     {
         score--;
-    }
 
+        bool search = false;
+        while (!search)
+        {
+            int rx = rand() % 16 + 1;
+            int ry = rand() % 8 + 1;
+            if (board[ry][rx] == ' ')
+            {
+                board[ry][rx] = '-';
+                search = true;
+            }
+
+        }
+
+    }
+    // 지렁이 이동
     board[x][y] = ' ';
     x += dx;
     y += dy;
@@ -137,7 +167,7 @@ void move() {
 
 int main(void)
 {
-
+    srand((unsigned int)time(NULL)); //srand 써서 매번랜덤값 변경해주기
     initialize(1, 1);
     while (1) {
         
